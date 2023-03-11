@@ -1,0 +1,90 @@
+---
+title: "Qualia Happy"
+subtitle: "Dataset description and supplementary information"
+toc: true
+output: pdf_document
+bibliography: "ref.bib"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      collapse = TRUE,
+                      out.lines = 1:7,
+                      cache = FALSE)
+
+# Packages
+library(knitr)
+library(brms)
+library(bayestestR)
+library(tidyverse)
+library(kableExtra)
+
+# Loading Data
+load("04.data_preprocessing/qualia_happy.RData")
+
+# Custom Chunks
+hook_output <- knit_hooks$get('output')
+knit_hooks$set(output = function(x, options) {
+  if (!is.null(n <- options$out.lines)) {
+    n <- as.numeric(n)
+    x <- unlist(stringr::str_split(x, "\n"))
+    nx <- length(x) 
+    x <- x[pmin(n,nx)]
+    if(min(n) > 1)  
+      x <- c(paste(options$comment, "[...]"), x)
+    if(max(n) < nx) 
+      x <- c(x, paste(options$comment, "[...]"))
+    x <- paste(c(x, "\n"), collapse = "\n")
+  }
+  hook_output(x, options)
+    })
+```
+
+# Dataset Presentation
+
+In the present report we describe the datasets from the Qualia_Happy BR Experiment. The dataset R file is `qualia_happy.RData` and contains 5 objects:
+
+## Xp resp
+
+`xp resp` has the classical long format  where each row represents a trial of binocular rivalry. We have a total of 896 observations and 41 variables (32 observations for each subject (28), 16 trials per block).
+
+```{r echo=FALSE}
+str(xp_resp)
+```
+
+## Valuation dataset
+
+`valuation dataset` has the classical long format where each row represents a valuation (valence or arousal) to a monocular image.
+We have a total of 448 observations and 8 variables (16 observations per subjects). Valuation of Valence and Arousal were performed at the end of each session (Experiment consists of 2 sessions of 2 blocks).
+
+```{r echo=FALSE}
+str(valuation_dataset)
+```
+
+## Onset dataset
+
+`onset dataset` has the classical long format  where each row represents a trial of binocular rivalry. This dataset is obtened from `rivalry dataset`.  
+We have a total of 896 observations and 5 variables.
+
+```{r echo=FALSE}
+str(onset_dataset)
+```
+
+## Rivalry dataset
+
+`rivalry dataset` has the classical long format  where each row represents a single rivalry responce during a trial . This dataset is obtened from `rivalry dataset`.  
+We have a total of 11648 observations and 7 variables.
+
+```{r echo=FALSE}
+str(rivalry_dataset)
+```
+
+## Questionnaires dataset
+
+`questionnaires dataset` has the classical wide format so each row represents a participant. We have a total of 28 observations and 73 variables. we report the participants' scores for two questionnaires. Toronto Alexithymia Scale 20 items (TAS) instrument is one of the most commonly used measures of alexithymia. The Interpersonal Reactivity Index (IRI) is a statement that enquires about thoughts and feelings of the self-reporter in a variety of situations.The measure has 4 subscales.
+
+```{r echo=FALSE}
+str(questionnaires_dataset)
+```
+
+# References
