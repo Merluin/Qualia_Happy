@@ -17,7 +17,9 @@ library(afex)
 library(hrbrthemes)
 library(emmeans)
 library(effectsize)
-
+library(bayestestR)
+library(BayesFactor)
+library(ggpirate)
 
 ## loading data ----
 rm(list=ls())
@@ -126,6 +128,30 @@ f_to_eta2(table[3,4],table[3,1],table[3,2])
 
 emmeans(a1,pairwise~ mimicry,adjust="bonf")
 emmeans(a1,pairwise~ initial_percept,adjust="bonf")
+
+
+#bayesfactor
+ORTANOVA<-ORTANOVA%>%
+  mutate(mimicry = as.factor(mimicry),
+         initial_percept= as.factor(initial_percept),
+         subject = as.factor(subject))
+
+Bfhappy<-ORTANOVA%>%
+  filter(initial_percept == "happy")
+t.test(onset ~ mimicry,Bfhappy, paired=TRUE)
+t_to_d(-0.501,26)
+ttestBF(x = Bfhappy$onset[Bfhappy$mimicry == "blocked"],y  = Bfhappy$onset[Bfhappy$mimicry == "free"], paired=TRUE)
+
+Bfneutral<-ORTANOVA%>%
+  filter(initial_percept == "neutral")
+t.test(onset ~ mimicry,Bfneutral, paired=TRUE)
+t_to_d(0.0028469,26)
+ttestBF(x = Bfneutral$onset[Bfneutral$mimicry == "blocked"],y  = Bfneutral$onset[Bfneutral$mimicry == "free"], paired=TRUE)
+
+Bfmixed<-ORTANOVA%>%
+  filter(initial_percept == "mixed")
+t.test(onset ~ mimicry,Bfmixed, paired=TRUE)
+ttestBF(x = Bfmixed$onset[Bfmixed$mimicry == "blocked"],y  = Bfmixed$onset[Bfmixed$mimicry == "free"], paired=TRUE)
 
 
 #################################################

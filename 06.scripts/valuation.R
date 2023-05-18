@@ -56,7 +56,7 @@ ggplot(VAVplot, aes(x=valence, y=arousal, color=mimicry, shape=stim.expression,l
   #geom_text()+
   scale_colour_manual(values=c( "#008b39","#fd345a"))+
   coord_cartesian(ylim = c(1,7),xlim = c(-3,3))+
-  labs(x="Valence valuation",y="Arousal Valuation",fill="Categories")+theme_classic()+
+  labs(x="Valence evaluation",y="Arousal Valuation",fill="Categories")+theme_classic()+
   theme(text=element_text(size=16,  family="Times New Roman"),
         panel.background = element_blank(),
         axis.line = element_line(colour = "black"),

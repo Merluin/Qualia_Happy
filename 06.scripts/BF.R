@@ -46,8 +46,6 @@ CT%>%
 # data ANOVA
 CTANOVA<-CT%>%
   filter(subject!=1,  subject!=23)%>%
-  #filter(subject!=1,subject!=22,subject!=23,subject!=25,subject!=26,subject!=27,subject!=28,subject!=29)%>%
-  #filter( subject != 1,subject != 23,subject != 22, subject != 26)%>%
   group_by(subject,mimicry,expression) %>%
   summarise_at(vars(time), list(mean))%>%
   as.data.frame()
