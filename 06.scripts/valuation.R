@@ -54,7 +54,7 @@ DSV<-VAVplot%>%
 ggplot(VAVplot, aes(x=valence, y=arousal, color=mimicry, shape=stim.expression,label= subject)) +
   geom_point(size=6, alpha=0.6)+
   #geom_text()+
-  scale_colour_manual(values=c( "#008b39","#fd345a"))+
+  scale_colour_manual(values=c( "#016AAB","#FF8010"))+
   coord_cartesian(ylim = c(1,7),xlim = c(-3,3))+
   labs(x="Valence evaluation",y="Arousal Valuation",fill="Categories")+theme_classic()+
   theme(text=element_text(size=16,  family="Times New Roman"),

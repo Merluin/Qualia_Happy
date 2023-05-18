@@ -92,7 +92,7 @@ CTANOVA%>%
   theme(text=element_text(size=16,  family="Times New Roman"),
         panel.background = element_blank(),
         axis.line = element_line(colour = "black"))+
-  scale_fill_manual(values=c("#008b39","#fd345a"))
+  scale_fill_manual(values=c("#016AAB","#FF8010"))
 
 
 ggsave("07.figures/CThappy.tiff", units="in", width=5, height=4, dpi=200, compression = 'lzw')

@@ -113,7 +113,7 @@ ORTANOVA%>%
   theme(text=element_text(size=16,  family="Times New Roman"),
         panel.background = element_blank(),
         axis.line = element_line(colour = "black"))+
-  scale_fill_manual(values=c("#008b39","#fd345a"))
+  scale_fill_manual(values=c("#016AAB","#FF8010"))
 
   
 ORTANOVA<-ORTANOVA%>%
