@@ -20,7 +20,8 @@ library(effectsize)
 library(bayestestR)
 library(BayesFactor)
 library(ggpirate)
-
+library(ggh4x)
+library(psych)
 
 ## loading data ----
 rm(list=ls())
@@ -77,22 +78,86 @@ CTANOVA%>%
   'colnames<-'(c("subject" ,"Mimicry", "Emotion","time"))%>%
   mutate(Mimicry = ifelse(Mimicry == "blocked","congruent","free"))%>%
   group_by(Emotion,Mimicry) %>%
-  # summarise( 
-  #   n=n(),
-  #   mean=mean(time),
-  #   sd=sd(time))%>%
-  # mutate( se=sd/sqrt(n))%>%
-  #'colnames<-'(c( "Emotion","Mimicry","n","CT", "sd" , "se"))%>%
-  ggplot(aes(x=Emotion, y=time, fill= Mimicry)) +
-  geom_pirate()+
-  #geom_bar(  stat="identity", position = position_dodge(width = 0.9)) +
-  #geom_errorbar( aes(x=Emotion, ymin=CT-se, ymax=CT+se), position = position_dodge(width = 0.9), width=0.4, alpha=0.9, size=.3)+
-  labs(x="Emotion",y="Cumulative Time (ms)")+
+  ggplot() +
+  geom_pirate(aes(x=Emotion, y=time), #, fill = Mimicry, shape = Mimicry),
+               bars = FALSE,
+               show.legend = TRUE,
+              points_params = list(shape = 1, size = 1))+
+  facet_grid(~Mimicry, 
+             scales = "free_x", # Let the x axis vary across facets.
+             space = "free_x",  # Let the width of facets vary and force all bars to have the same width.
+             switch = "x") +
+labs(x="Emotion",y="Cumulative Time (ms)")+
   theme_classic()+
   theme(text=element_text(size=16,  family="Times New Roman"),
         panel.background = element_blank(),
-        axis.line = element_line(colour = "black"))+
-  scale_fill_manual(values=c("#016AAB","#FF8010"))
+        axis.line = element_line(colour = "black"),
+        legend.position = "bottom")+
+  scale_x_discrete(NULL, guide = "axis_nested")
+
+dat<-CTANOVA%>%
+  filter(time!=0)%>%
+  'colnames<-'(c("subject" ,"Mimicry", "Emotion","time"))%>%
+  mutate(Mimicry = ifelse(Mimicry == "blocked","congruent","free"),
+         group = paste0(Emotion," ",Mimicry))%>%
+  drop_na(time)%>%
+  select(time,group)
+
+descriptives = describeBy(x = dat$time, group = dat$group)
+group = c('happy congruent',
+          'happy free',
+          'mixed congruent',
+          'mixed free',
+          'neutral congruent',
+          'neutral free')
+means = c(descriptives$`happy congruent`$mean,
+          descriptives$`happy free`$mean,
+          descriptives$`mixed congruent`$mean,
+          descriptives$`mixed free`$mean,
+          descriptives$`neutral congruent`$mean,
+          descriptives$`neutral free`$mean)
+se = c(descriptives$`happy congruent`$se,
+       descriptives$`happy free`$se,
+       descriptives$`mixed congruent`$se,
+       descriptives$`mixed free`$se,
+       descriptives$`neutral congruent`$se,
+       descriptives$`neutral free`$se)
+plotdat=data.frame(group, means, se)
+
+apatheme=theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        panel.border = element_blank(),
+        text=element_text(size=16,family='Times New Roman'),
+        legend.title=element_blank(),
+        legend.position="bottom",
+        axis.line.x = element_line(color='black'),
+        axis.line.y = element_line(color='black'))
+
+#Use data frame of summary statistics ('plotdat')
+#and map group to x-axis and means to y-axis
+
+p1 = ggplot(data = plotdat, aes(x = group, y = means, shape = group))+
+  #Insert bean plot based on data frame of raw data ('dat')
+  #and map group to x-axis and raw dv scores to y-axis
+  geom_violin(data= dat, aes(x = group, y = time))+
+  #Likewise, add raw data points (jittered) with same mappings
+  geom_jitter(data= dat, aes(x = group, y = time), shape = 1, width = .1)+
+  #Add data points (with no unique mapping manually specified, the data
+  #points will fall back on reflecting our originally-specified data,
+  #the means of each group)
+  geom_point(size = 3)+
+  #Add error bars for 95% CIs of each group mean
+  geom_errorbar(ymax= means+(1.96*se), ymin=means+(-1.96*se), width = 0.25)+
+  labs(x="Emotion",y="Cumulative Time (ms)")+
+  #Apply the APA-format theme object
+  apatheme+
+  xlab(label = "Emotion")+
+  ylab(label ="Cumulative Time (ms)")
+
+
+
 
 
 ggsave("07.figures/CThappy.tiff", units="in", width=5, height=4, dpi=200, compression = 'lzw')

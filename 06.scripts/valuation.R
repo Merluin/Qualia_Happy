@@ -51,7 +51,9 @@ DSV<-VAVplot%>%
 
 # plot valuatioon  ----
 #plot
-ggplot(VAVplot, aes(x=valence, y=arousal, color=mimicry, shape=stim.expression,label= subject)) +
+ggplot(VAVplot%>%
+         mutate(mimicry = ifelse( mimicry == "blocked","congruent","free"),
+           group = paste0(stim.expression," ",mimicry)), aes(x=valence, y=arousal,  shape=group,label= subject)) +
   geom_point(size=6, alpha=0.6)+
   #geom_text()+
   scale_colour_manual(values=c( "#016AAB","#FF8010"))+
@@ -60,7 +62,8 @@ ggplot(VAVplot, aes(x=valence, y=arousal, color=mimicry, shape=stim.expression,l
   theme(text=element_text(size=16,  family="Times New Roman"),
         panel.background = element_blank(),
         axis.line = element_line(colour = "black"),
-        legend.position = "none")
+        legend.position = "bottom")+
+  apatheme
 
 
 

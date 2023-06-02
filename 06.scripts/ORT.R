@@ -115,6 +115,60 @@ ORTANOVA%>%
         axis.line = element_line(colour = "black"))+
   scale_fill_manual(values=c("#016AAB","#FF8010"))
 
+dat<-ORTANOVA%>%
+  'colnames<-'(c("subject" ,"Mimicry", "initial_percept","onset"))%>%
+  mutate(Mimicry = ifelse(Mimicry == "blocked","congruent","free"),
+         group = paste0(initial_percept," ",Mimicry))%>%
+  drop_na(onset)%>%
+  select(onset,group)
+
+descriptives = describeBy(x = dat$onset, group = dat$group)
+group = c('happy congruent',
+          'happy free',
+          'neutral congruent',
+          'neutral free')
+means = c(descriptives$`happy congruent`$mean,
+          descriptives$`happy free`$mean,
+          descriptives$`neutral congruent`$mean,
+          descriptives$`neutral free`$mean)
+se = c(descriptives$`happy congruent`$se,
+       descriptives$`happy free`$se,
+       descriptives$`neutral congruent`$se,
+       descriptives$`neutral free`$se)
+plotdat=data.frame(group, means, se)
+
+apatheme=theme_bw()+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        panel.border = element_blank(),
+        text=element_text(size=16,family='Times New Roman'),
+        legend.title=element_blank(),
+        legend.position="bottom",
+        axis.line.x = element_line(color='black'),
+        axis.line.y = element_line(color='black'))
+
+#Use data frame of summary statistics ('plotdat')
+#and map group to x-axis and means to y-axis
+
+p1 = ggplot(data = plotdat, aes(x = group, y = means, shape = group))+
+  #Insert bean plot based on data frame of raw data ('dat')
+  #and map group to x-axis and raw dv scores to y-axis
+  geom_violin(data= dat, aes(x = group, y = onset))+
+  #Likewise, add raw data points (jittered) with same mappings
+  geom_jitter(data= dat, aes(x = group, y = onset), shape = 1, width = .1)+
+  #Add data points (with no unique mapping manually specified, the data
+  #points will fall back on reflecting our originally-specified data,
+  #the means of each group)
+  geom_point(size = 3)+
+  #Add error bars for 95% CIs of each group mean
+  geom_errorbar(ymax= means+(1.96*se), ymin=means+(-1.96*se), width = 0.25)+
+  labs(x="Initial percept",y="Onset resolution time log(ms)")+
+  #Apply the APA-format theme object
+  apatheme+
+  xlab(label = "Initial percept")+
+  ylab(label ="Onset resolution time log(ms)")
+
   
 ORTANOVA<-ORTANOVA%>%
   filter(subject != 22)
