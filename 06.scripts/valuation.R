@@ -17,7 +17,7 @@ library(lsmeans)
 library(afex)
 library(ggpirate)
 library(effectsize)
-
+library(flextable)
 ## loading data ----
 rm(list=ls())
 load("04.data_preprocessing/qualia_happy.RData")
@@ -65,8 +65,20 @@ ggplot(VAVplot%>%
         legend.position = "bottom")+
   apatheme
 
+# barplot
+VAVplot%>%
+  group_by( mimicry,stim.expression) %>%
+  summarise_at(vars(valence,arousal), list(mean))%>%
+  mutate(mimicry = ifelse(mimicry == "blocked", "manipulated", mimicry)) %>%
+  'colnames<-'(c("Mimicry","Emotion","Valence","Arousal"))%>%
+  flextable() %>% 
+  colformat_double(digits = 2) %>% 
+  autofit() %>% 
+  merge_v(j = 1:2) %>% 
+  theme_vanilla() %>% 
+  align(align = "center")
 
-
+  
 ############### ANOVA VALENCE ----
 # dataset ----
 temp<-valuation_dataset %>%
